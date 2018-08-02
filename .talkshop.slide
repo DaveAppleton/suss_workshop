@@ -77,7 +77,7 @@ Current state = sum of all previous transactions
 * Digital Signatures
 .background images/Artboard_4.png
 - a small change in the content causes a huge change in the result.
-.play hashBaby.go  /start main OMIT/,/end main OMIT/
+.play hashbaby.go  /start main OMIT/,/end main OMIT/
 
 If we encrypt the hash value using public key encryption 
 
