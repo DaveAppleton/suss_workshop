@@ -1,0 +1,64 @@
+* PROJECT
+
+The way that the project was designed
+
+
+We have a token that entitles holders to rewards.
+
+The tokens that a person holds determines the allocation of the rewards that they receive according to an 
+allocation function 
+
+     setAllocation(uint amount)
+
+If the total reward is $3,000 and they hold 100,000 tokens out of a total 1,000,000 they will
+
+receive $3,000 x 100,000 / 1,000,000 = $300
+
+
+
+Then....
+
+At some point, the project owner promised the token holders that some tokens would be "burned"
+
+The implication of this is that the pool of holders would be reduced thereby increasing individual rewards.
+
+For example, if 200,000 tokens are burned, the same token holder is now entitled to
+
+receive $3,000 x 100,000 / 800,000 = $375
+
+Unfortunately
+
+The token contract did not have a burn function, he needs a workaround for it.
+
+He decides to create a burner contract to which tokens can be sent but not withdrawn. 
+
+This effectively removes the tokens from circulation but does not, of itself, solve the allocation problem
+
+because the setAllocation function does not know about the burner contract and so thinks that there are still
+
+1,000,000 tokens and so, for an allocation of $3,000 still calculates  $3,000 x 100,000 / 1,000,000 = $300
+
+
+To solve this problem the burner contract will be designed to have an intermediary function that on being told to 
+
+allocate $3,000 calculates an adjusted amount such that the holders of the "unburned tokens" receive the correct amount.
+
+
+the function definition will be something like this
+
+	token  public mainToken;
+
+	function setAllocation(uint amount) {
+		newAllocation = f(amount);
+		mainToken.setAllocation(newAllocation);
+	}
+
+Your mission, should you chose to accept it, is to figure out how to replace f(amount);
+
+We will build this using embark.
+
+
+
+
+
+

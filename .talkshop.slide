@@ -1,0 +1,1131 @@
+Smart Contracts Workshop
+a.k.a. hacking the blockchain
+9 Mar 2018
+Tags: Ethereum, Solidity, Smart Contracts, Golang, Gophercon India 
+
+Dave Appleton
+Lead blockchain developer, HelloGold
+Senior Advisor Akomba Labs
+calistralabs@gmail.com
+https://hellogold.com
+https://akomba.com
+@AppletonDave
+
+
+* Our Agenda
+.background images/Artboard_4.png
+- Introduction (me)
+- The Blockchain in five minutes
+- ethereum and smart Contracts
+- Writing Smart Contracts
+- Traps and Pitfalls
+- Interacting with the blockchain
+- Test environments
+- Building a user interface
+
+
+* Introduction (me)
+.background images/Artboard_4.png
+
+.image blockchain.jpg 150 _
+- Englishman living in Southeast Asia for 36 years
+- Programming since 1968
+- background in instrumentation, machine vision
+- Blockchain dev since 2014
+- Lead blockchain developer at HelloGold, Malaysia
+- Blockchain Consultant with Akomba Labs
+
+* The blockchain in five minutes
+.background images/Artboard_4.png
+
+.image images/blockchain.png 400 _
+
+* What is a blockchain ?
+.background images/Artboard_4.png
+
+- signed transactions
+- Put into signed blocks
+- Which are added to a chain (list) by signed links
+- which is distributed all over a decentralised network
+- in a manner such that all the independant nodes that operate the network agree the whole thing to be valid (consensus)
+
+* Transactions ?
+.background images/Artboard_4.png
+- Anything that can change the state of something.
+- A transfer of value or data
+
+    {
+       From : Dave
+       To : Alice
+       Value : 100
+       Data : "Happy Birthday Alice. Buy yourself something nice"
+    }
+
+Web analogy:
+
+.code demo_code.txt /start REST OMIT/,/end REST OMIT/
+
+Current state = sum of all previous transactions
+
+* Thought of the day....
+.background images/Artboard_4.png
+
+"Young man, in mathematics you don't understand things. You just get used to them."
+
+.caption John von Neumann.
+
+* Digital Signatures
+.background images/Artboard_4.png
+- a small change in the content causes a huge change in the result.
+.play hashBaby.go  /start main OMIT/,/end main OMIT/
+
+If we encrypt the hash value using public key encryption 
+
+we can prove it was from me 
+
+and make it unforgeable
+
+* Public Key encryption in 20 seconds
+.background images/Artboard_4.png
+- create a truly random a private key
+- public key (address) derived from private key
+- something encrypted by private key can be read with public key 
+_or_
+
+- you can derive the signer from the encrypted data
+- encrypting the hash, ensures that the hash, thus the document is unchanged
+- and ensures that the signer is who they say they are.
+
+.code demo_code.txt /start RESTx OMIT/,/end RESTx OMIT/
+
+* signing
+.background images/Artboard_4.png
+.image images/hashing.png
+
+* Into blocks
+.background images/Artboard_4.png
+
+.image images/intoblocks.png 500 _
+
+* In a manner that everybody agrees (Consensus)
+.background images/Artboard_4.png
+
+- the details are not terribly relevent in our context except
+- design of consensus algorithm ensures that no one node makes all the decisions
+- makes it virtually impossible for anybody to modify the past records in the chain
+- means that each node has an identical copy of the state of the blockchain
+
+* Etherscan
+.background images/Artboard_4.png
+
+- have a look at https://etherscan.io 
+.image images/etherscan.png 350 _
+
+* Etherscan
+.background images/Artboard_4.png
+- the Google of the blockchain
+
+.image images/etherscan2.png 300 _
+
+* Wallets
+.background images/Artboard_4.png
+
+.image images/wallets.jpg 450 _
+
+
+* Easy ways to access your account/balance?
+.background images/Artboard_4.png
+
+Something that *performs* *one* *or* *more* *of*
+- managing keys
+- creating transactions
+- signing transactions
+is often called a Wallet. (but it isn't)
+
+
+* What makes Ethereum special ?
+.background images/Artboard_4.png
+
+.image images/ethereumAndSmart.png 450 _
+ 
+* Introducing Smart Contracts
+.background images/Artboard_4.png
+- remember the "data" field?
+- a way to give certain blocks of byte code an address...
+- compilers
+- byte-codes
+- virtual machines....
+- function routing...
+- state variables...
+Running on thousands of nodes
+
+* What are smart contracts
+.background images/Artboard_4.png
+
+.image images/smartcontractonchain.png
+
+* a look at the vm
+.background images/Artboard_4.png
+
+.code demo_code.txt /start vm OMIT/,/end vm OMIT/
+
+* a look at the vm
+.background images/Artboard_4.png
+
+.code demo_code.txt /start op OMIT/,/end op OMIT/
+
+* And the whole thing is agreed and transparent
+.background images/Artboard_4.png
+
+.image images/etherscan3.png 400 _
+
+* so we have a network of 25,000 computers all running code!
+.background images/Artboard_4.png
+
+.code demo.sol
+
+* Let's see what it does
+.background images/Artboard_4.png
+
+Open browser at `https://remix.ethereum.org`
+
+Create blank tab and give it a name (e.g. test.sol) in remix and past text
+
+.image images/remix.png 400 _
+
+* Launch contract (2nd tab on right)
+.background images/Artboard_4.png
+
+Use Javascript VM for now
+
+.image images/remix-launch.png 400 _
+
+* Deploy...
+.background images/Artboard_4.png
+
+.image images/remix-launched.png 400 _
+
+* Try sending ether from different accounts
+.background images/Artboard_4.png
+
+.image images/select-account.png 200 _
+.image images/send-value.png 200 _
+
+Click on Deposit button
+
+* look at logs
+.background images/Artboard_4.png
+
+.image images/log.png 400 _
+
+* Analysis of the code
+.background images/Artboard_4.png
+
+    pragma solidity ^0.4.23;
+
+This tells the solidity compiler not to compile unless it has a __minimum_ revision level of 0.4.23
+
+    contract exchange {
+      ...
+    }
+
+Programs on the ethereum blockchain are referred to as smart contracts. 
+
+The contract starts with `contract` and ends with a matching `}` to the `{` after the keyword contract.
+
+* Variable declaration
+.background images/Artboard_4.png
+
+    address public owner = msg.sender;
+
+This declares a variable (owner) of type address and pre-assigns it the value msg.sender. *
+
+The variable can be read easily (e.g. on etherscan)
+
+`*msg.sender` in this case refers to the account that launched the contract.
+
+  uint amount = address(this).value;
+
+`amount` is only accessible inside the withdraw function and forgotten once the function exits
+
+variables are **private* by default.
+
+each public variable has a **getter* created for it.
+
+* Functions
+.background images/Artboard_4.png
+
+    function deposit() public payable {
+        emit Deposit(msg.sender,msg.value);
+    }
+
+This function can be called by anybody (default)
+This function accepts ether
+This function emits an event
+
+    function withdraw public {
+        require(msg.sender == owner);
+        uint amount = address(this).value;
+        owner.transfer(amount);
+        emit Withdraw(amount)
+    }
+
+This function will revert if called by an account other than `owner`
+This function sends all the ether in the contract to the owner
+This function emits an event
+
+* Try withdrawing from different accounts
+.background images/Artboard_4.png
+
+.image images/bad-wd.png 400 _
+
+* instruction reverts (no changes made)
+.background images/Artboard_4.png
+
+.image images/bad-wd-revert.png 200 _
+
+
+* Types of function
+.background images/Artboard_4.png
+
+functions can be
+
+- public - can be called by anybody (you can reduce access)
+- private - can only be called inside this contract
+- internal - can be called from inside this contract or derived contracts
+- external - can ONLY be called from outside the contract
+- view - constant function
+- pure - constant function that does NOT access state variables
+
+View and Pure public functions can be called free of charge from a client.
+
+* modifiers
+.background images/Artboard_4.png
+
+A modifier is a convenient way of writing constraints
+
+  modifier onlyOwner() {
+    require(owner==msg.sender);
+    _;
+  }
+
+This is put in the declaration of a function. The `_;` gets replaced by the body of the function.
+
+  function withdraw() public onlyOwner {
+    uint amount = address(this).value;
+    owner.transfer(amount);
+    emit Withdraw(amount);
+  }
+
+
+* events 
+.background images/Artboard_4.png
+
+Events are a way for a contract to talk to the outside world
+The event data is stored with the transaction receipt once the transaction is processed
+
+    event  Deposit(address indexed sender, uint amount);
+    event  Withdraw(uint amount);
+ 
+Events are declared almost like functions but without bodies.
+Events are called with data during contract execution
+
+  emit Deposit(msg.sender,msg.value);
+  emit Withdraw(amount)
+
+Events capture information from an instant of time and are recorded on the blockchain.
+
+* Event logs
+.background images/Artboard_4.png
+
+Events are logged in the transaction receipt. When the block is mined they also get added to a filter 
+record that enables you to search for a particular log on a contract or filter incoming transactions.
+
+Log entries are made up of
+
+- Hash of the event Signature (keccak-256)
+- Indexed data
+- Other data
+
+* Event Logs 
+
+.background images/Artboard_4.png
+
+.image images/etherscan-logs.png 500 _
+
+* Signature
+
+Signature : Keccak256 of Name(data type1,...) 
+
+e.g.
+
+Keccak256(Deposit(address,uint256)) => 
+
+    e1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c
+
+address is padded to 32 bytes
+
+    00000000000000000000000031efd75bc0b5fbafc6015bd50590f4fdab6a3f22
+
+the amount (uint256) also padded
+
+    0000000000000000000000000000000000000000000000000DE0B6B3A7640000
+
+You can experiment in remix 
+
+* indexed data?
+
+Specifying a data item to be indexed means it gets included among the topics rather than data
+
+If you watch the blockchain you can filter for specific events that are emitted using
+- address (emitting the event)
+- signature (i.e. the event itself)
+- the indexed data
+
+If you need to filter on non indexed data you will need to examine each result to see if it matches your specific criteria.
+
+https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_newfilter
+
+* Sending ether?
+.background images/Artboard_4.png
+
+We can send ether with
+
+    address.send(uint amount) boolean
+    address.transfer(uint amount)
+
+Would you rather be ownerOne or ownerTwo? 
+
+  address ownerOne = 0x31efd75bc0b5fbafc6015bd50590f4fdab6a3f22;
+  address ownerTwo = 0xa8bfc6cda04eb5b0d3c460751c2402c5c5cc9109;
+
+  function split() public payable {
+    uint amount = address(this).value;
+    ownerOne.send(amount/2);
+    ownerTwo.send(amount/2);
+  }
+
+* The DAO hack (simplified)
+.background images/Artboard_4.png
+
+    function withdraw() public {
+        address recipient = msg.sender;
+        uint amount = balance[recipient];
+        if (amount != 0) {
+            recipient.send(amount);
+            balance[msg.sender] = 0;
+            emit Withdrawal(recipient,amount);
+        }
+    }
+
+Sending ether to a contract calls the fallback function
+
+   function start() public {
+       count = 4;
+       dao.withdraw()
+   }
+
+   function() {
+       if count != 0 {
+           dao.withdraw();
+           count--;
+       }
+   }
+
+* Sending ether (post DAO)
+.background images/Artboard_4.png
+
+Since the DAO, the amount of gas provided with send and transfer is limited to 23,000
+
+This was implemented in Solidity version 0.4.XX
+
+Sending ether from a contract can FAIL
+
+1. not enough gas provided to perform the transfer
+2. receiving contract does not have a fallback function
+3. receiving contract reverts
+
+send vs transfer
+
+if sending fails, the `send` function returns false
+if sending fails, the `transfer` function reverts
+
+it is critical to check the return value of a `send` 
+
+* The importance of AUDITS
+.background images/Artboard_4.png
+
+You can't fix bugs once code is launched.
+You can't reverse transactions or recover lost ether.
+
+An audit checks for things like
+
+- unintended ether flows
+- unintended access to functions
+- overflow issues
+- correct general functioning of code
+- front running
+
+* Solidity Basics
+.background images/Artboard_4.png
+
+* Types boolean
+.background images/Artboard_4.png
+
+used to control program flow / return binary results
+
+- true / false
+  !  negation
+  && logical and
+  || logical or
+  == equality
+  != non equality
+
+-  "||" and "&&" stop evaluating once they are satisfied
+
+    uint x = 2;
+    if (isEven(x) || isLarge(x)) {
+        ...
+    }
+    // isLarge is not executed...
+
+
+* Types int and uint
+.background images/Artboard_4.png
+
+- int and uint of sizes 8 to 256 (default) in steps of 8
+- written as hex, decimal, scientific
+
+  2000000
+  2e10
+  2 * 10 ** 10
+  0xaf0e
+
+- Comparison : <=, ==, >=, !=, >, <
+- Bitwise : |, &, ^, ~
+- Maths : +, -, /, *, ++, --, %, **, >>, <<
+- DIV truncates, reverts on zero denominator
+- MOD zero reverts
+
+* Types address
+.background images/Artboard_4.png
+
+- address is a 20 byte (160 bit) number
+- literal should be a checksummed hex string
+- used to refer to an account or a contract
+
+  address alice = 0x31EFd75bc0b5fbafc6015Bd50590f4fDab6a3F22;
+
+- sending ether
+
+  alice.send(1 ether);
+
+- contract 
+  address hgExchange = 0x18fF9965720191B169A7b268974533a8FBBd0113;
+  exchange goldEx = exchange(hgExchange);
+  hgExchange.call.gas(1000000).value(1 ether)(abi.encodeWithSignature("BuyGold()"));;
+
+* Types address (more)
+.background images/Artboard_4.png
+
+- comparison : <=, <, ==, !=, >= and >
+- built in functions
+
+  balance - get ether balance of an address
+  send    - send ether to address (returns false on failure)
+  transfer- send ether to address (reverts on failure)
+  call    - call a function by signature
+  
+  delegatecall is like call but target contract uses caller's dataspace.
+
+* Types fixed length byte array
+.background images/Artboard_4.png
+
+up to 32 bytes, packed into a single 256 bit word
+
+examples
+
+   bytes32
+   bytes4
+   byte
+
+operators : same as integer 
+
+indexing : arr[x] read only
+
+members arr.length
+
+* Types variable length byte array
+.background images/Artboard_4.png
+
+byte[] each element occupies 1 256 bit word
+bytes  packed array
+
+usual array operators apply
+
+ arr.push()
+ arr.length   read/write
+ arr[pos]     read/write
+
+ uint[] memory a = new uint[](7);
+ bytes memory b = new bytes(len);
+
+
+* Types strings
+.background images/Artboard_4.png
+
+   string str = "Hello World";
+
+   non indexable, no operations
+
+   can convert to bytes<n> if they fit 
+   can convert to bytes
+
+* Types arrays
+.background images/Artboard_4.png
+
+create empty array
+
+    uint[] nums;
+    ...
+    nums = new uint[](3);
+
+create filled array and walk through it
+
+    uint[] x = [uint(1), 3, 4];
+    for (uint pos = 0; pos < x.length; pos++) {
+        ...
+    }
+
+2D array (weird)
+
+    // dynamic array filled with pairs instead (for example, of fixed size arrays of length two).
+    bool[2][] m_FlagPairs;
+
+    m_FlagPairs[index][0] = flagA;
+    m_FlagPairs[index][1] = flagB;
+
+* Types arrays
+.background images/Artboard_4.png
+
+Resizing arrays
+
+    m_FlagPairs.length = newSize;
+
+Appending to an array
+
+    len = m_FlagPairs.push(flag);
+
+* array of bytes - string
+.background images/Artboard_4.png
+
+  pragma solidity ^0.4.24;
+
+  contract test {
+   
+    event logStr(string s);
+    event logBytes(bytes b);
+    
+    constructor() public {
+        bytes memory alpha = new bytes(26);
+        for (uint i = 0; i < alpha.length; i++)
+            alpha[i] = byte(0x41+i);
+        emit logBytes(alpha);
+        emit logStr(string(alpha));
+    }
+  }
+
+logs 
+
+  logBytes : 0x4142434445464748494a4b4c4d4e4f505152535455565758595a
+
+  logStr : ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+* Types mappings
+.background images/Artboard_4.png
+
+- sparse associations of key => value 
+- NOT iterable
+
+examples
+
+    mapping( address => uint256 ) public balances;
+    ...
+
+    balances[msg.sender] += msg.value;
+
+- public mappings are accessed by key value
+
+* DEFAULTS and delete
+.background images/Artboard_4.png
+
+values default to zero, false, zero length (string / array)
+
+  uint public startsAtZero;
+
+  bool public startsAtFalse;
+
+  mapping(address => uint) public allStartAtZero;
+
+delete reverts a storage location to its default value
+
+  contract test {
+     
+    uint[] public x = [uint(1), 3, 4];
+    
+    funtion del() public {
+       delete x;
+    }
+    
+    function lenX() view returns (uint) {
+        return x.length;
+    }
+  }
+
+* Types structs
+.background images/Artboard_4.png
+
+    struct Backer {
+        address addr;
+        uint fundAmount;
+    }
+    mapping (uint => Backer) backers;
+    b = Backer({addr: msg.sender, fundAmount: msg.value});
+
+    struct crowdFundingCampaign {
+        address beneficiaryAddress;
+        uint fundGoal;
+        uint numBacker;
+        uint fundAmount;
+        mapping (uint => Backer) backers;
+    }
+
+    // Create new struct and save in storage, leaving out the mapping type.
+    crowdFundingCampaigns[crowdFundingCampaignID] 
+        = crowdFundingCampaign(beneficiaryAddress, goal, 0, 0);
+
+* Types enums
+.background images/Artboard_4.png
+
+enums can make your code more readable AND prevent mistakes
+
+    enum moveChoice { moveLeft, moveRight, moveStraight, stayStill }
+
+    moveChoice currentChoice;
+    
+    moveChoice constant defaultChoice = moveChoice.moveStraight;
+
+* functions - definitions
+.background images/Artboard_4.png
+
+   function setRate(uint newRate) public;
+
+   function setRate(uint newRate) external;
+
+   function setRate(uint newRate) internal;
+
+   function setRate(uint newRate) private;
+
+   function getAge() public view returns (uint);
+
+   function getAge(uint today, uint then) public pure returns (uint);
+
+   function buyTokens(address recipient) public payable;
+
+multiple returns
+
+    function getMinMax(uint a, uint b) public view returns (uint min, uint max);
+
+* Weird function stuff
+.background images/Artboard_4.png
+
+    function func1(uint value, uint key) {
+        // ...
+    }
+    function func2() {
+        // arguments are named
+        func1({key: 3, value: 2});
+    }
+
+
+* world types
+.background images/Artboard_4.png
+
+    uint x = 1 ether;
+
+    uint delay = 1 weeks;
+
+* transaction and block data
+.background images/Artboard_4.png
+
+    block.blockhash(uint numberOfBlock) returns (bytes32): hash which belongs to the given block – will only work for 256 of the most recent blocks, not including current
+    block.difficulty (uint): difficulty of the current block
+    block.coinbase (address): miner’s address of the current block
+    block.number (uint): number of the current block
+    block.gaslimit (uint): gaslimit of the current block
+    block.timestamp (uint): timestamp of the current block as seconds passed since the unix epoch
+    now (uint): timestamp of the current block (alias for block.timestamp)
+
+transaction
+
+    msg.gas (uint): gas that remains
+    msg.data (bytes): complete calldata
+    msg.value (uint): amount of wei which was sent along with the message
+    msg.sender (address): message sender (current call)
+    msg.sig (bytes4): calldata’s first four bytes (i.e. function identifier)
+    tx.origin (address): sender of the transaction (whole call chain)
+    tx.gasprice (uint) : gas price specified
+    gasleft() - how much gas remains
+
+    calldata : the data sent to the transaction
+
+* reverts and selfdestruct
+.background images/Artboard_4.png
+
+    require(now < saleStart);
+    assert(a < b);
+    revert();
+
+with messages (limited support)
+
+    require(now < saleStart,"sale not started");
+    assert(a < b, "illegal values");
+    revert("not happy");
+
+selfdestruct
+
+   selfdestruct(address recipient);
+
+-  clears state memory & code
+-  sends balance (if any) to specified address
+
+* control structures (similar to Javascript)
+.background images/Artboard_4.png
+
+    if (condition) { } else { }
+
+    while (condition) { }
+
+    for (init; while; opAtEndOfLoop) { }
+
+    do { } while (condition);
+
+loop modification
+
+    continue - jumps to next iteration
+    
+    return - exits function (and may return data)
+
+    break - jumos out of loop
+
+conditional
+
+    uint contrib := (now < start) ? 0 : msg.value;
+
+
+* creating contracts from inside other contracts
+.background images/Artboard_4.png
+
+    contract one {
+        
+        uint public num;
+    
+        constructor(uint n) public {
+            num = n;
+        }
+        
+        function set(uint x) public {
+            num = x;
+        }
+    }
+
+    contract two {
+        one public uno = new one(42);
+        
+        function setOne(uint n) public {
+            uno.set(n);
+        }
+    }
+
+* other stuff
+.background images/Artboard_4.png
+
+- this / address(this)
+- inheritance
+- abi functions
+- hash functions
+- modulo arithmetic
+- signature verification
+
+* What could go wrong?
+.background images/Artboard_4.png
+
+Monero GOLD 
+
+https://66shitcoins.com/blog/2018/2/4/monero-gold-the-story-and-tech-specs-of-a-4-million-usd-shitcoin-scam-brilliantly-executed
+
+.code moneroGold.sol /start hack OMIT/,/end hack OMIT/
+
+* The safemath library
+.background images/Artboard_4.png
+
+- Safemath ensures that your maths does not produce overflows.
+- It is a LIBRARY 
+
+  /**
+  * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
+  */
+  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    assert(_b <= _a);
+    return _a - _b;
+  }
+
+  /**
+  * @dev Adds two numbers, throws on overflow.
+  */
+  function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
+    c = _a + _b;
+    assert(c >= _a);
+    return c;
+  }
+
+* Using Safemath
+.background images/Artboard_4.png
+
+   contract davesCoin {
+       using safemath for uint;
+
+       ...
+
+        /**
+        * @dev Transfer token for a specified address
+        * @param _to The address to transfer to.
+        * @param _value The amount to be transferred.
+        */
+        function transfer(address _to, uint256 _value) public returns (bool) {
+            require(_value <= balances[msg.sender]);
+
+            balances[msg.sender] = balances[msg.sender].sub(_value);
+            balances[_to] = balances[_to].add(_value);
+            emit Transfer(msg.sender, _to, _value);
+            return true;
+        }
+
+   }
+
+* What could go wrong?
+.background images/Artboard_4.png
+
+https://medium.com/@peckshield/alert-new-batchoverflow-bug-in-multiple-erc20-smart-contracts-cve-2018-10299-511067db6536
+
+  function batchTransfer(address[] _receivers, uint256 _value) public whenNotPaused returns (bool) {
+    uint cnt = _receivers.length;
+    uint256 amount = uint256(cnt) * _value;
+    require(cnt > 0 && cnt <= 20);
+    require(_value > 0 && balances[msg.sender] >= amount);
+
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    for (uint i = 0; i < cnt; i++) {
+        balances[_receivers[i]] = balances[_receivers[i]].add(_value);
+        Transfer(msg.sender, _receivers[i], _value);
+    }
+    return true;
+  }
+
+* ERC20 Tokens 
+.background images/Artboard_4.png
+
+https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
+
+optional
+
+  function name() view returns (string name)
+  function symbol() view returns (string symbol)
+  function decimals() view returns (uint8 decimals)
+
+compulsory
+
+  function totalSupply() view returns (uint256 totalSupply)
+  function balanceOf(address _owner) view returns (uint256 balance)
+  function transfer(address _to, uint256 _value) returns (bool success)
+  function transferFrom(address _from, address _to, uint256 _value) returns (bool success)
+  function approve(address _spender, uint256 _value) returns (bool success)
+  function allowance(address _owner, address _spender) view returns (uint256 remaining)
+
+  event Transfer(address indexed _from, address indexed _to, uint256 _value)
+  event Approval(address indexed _owner, address indexed _spender, uint256 _value)
+
+* Common ERC20 added funcionality
+.background images/Artboard_4.png
+
+- Mintable
+- Burnable
+- Pausable
+- transferAndCall
+- approveAndCall
+
+* Important Models
+.background images/Artboard_4.png
+
+- Ownable
+- Claimable
+- Pausable
+- WhiteList
+- Withdraw
+
+interesting 
+
+- Heritable
+- HasNoContracts
+
+* Interacting with your dapp with Web3.js
+.background images/Artboard_4.png
+
+Javascript interface to build into a web page
+library that understands transactions, ABI, etc.
+You STILL need the webpage
+
+    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+    if (typeof web3 !== 'undefined') {
+        // Use Mist/MetaMask's provider
+        web3js = new Web3(web3.currentProvider);
+        return true;
+    } else {
+        web3 = new Web3();
+        //web3.setProvider(new web3.providers.HttpProvider('https://api.myetherapi.com/eth'));
+        web3.setProvider(new web3.providers.HttpProvider('https://kovan.infura.io/daveappleton'));
+        return true;
+    }
+
+* Web3.js
+.background images/Artboard_4.png
+    web3.version.getNetwork((err, netId) => {
+        switch (netId) {
+            case "1":
+                $("#answer").val('** DO NOT USE **\nThis is mainnet')
+                break;
+            case "2":
+                $("#answer").val('** DO NOT USE **\nThis is the deprecated Morden test network.')
+                break;
+            case "3":
+                $("#answer").val('** DO NOT USE **\nThis is the ropsten test network.')
+                break;
+                case "4":
+                $("#answer").val('** DO NOT USE **\nThis is the Rinkeby test network.')
+                break
+            case "42":
+                $("#answer").val('This is the Kovan test network.\n Please proceed.')
+                break;
+            default:
+                $("#answer").val('** DO NOT USE **\nThis is an unknown network.')
+                break;
+        }
+    })
+
+* Web3.js
+.background images/Artboard_4.png
+
+    var exchangeABI = `[{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "buyGold",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	}]`;
+
+
+* Web3.js
+.background images/Artboard_4.png
+
+    let hgt = web3.eth.contract(JSON.parse(HGTabi)).at(HGTaddress);
+    let goldx = web3.eth.contract(JSON.parse(HGTabi)).at(GOLDXaddress);
+    let exchg = web3.eth.contract(JSON.parse(exchangeABI)).at(exchangeAddress);
+
+    function buyGold() {
+        amountOfHGT = $("#use").val()*100000000;
+        amountOfEther = $("#send").val();
+        console.log(amountOfHGT, amountOfEther);
+        hgt.approve(exchangeAddress,amountOfHGT , (err, result) => {
+
+        exchg.buyGold(amountOfHGT, { value: web3.toWei(amountOfEther) }, (err, result) => { window.setTimeout(getReceipt(result), 200000); }); // gets the tx hash
+            console.log("done");
+        });
+ 
+* Web3.js
+.background images/Artboard_4.png
+
+        let e = window.web3.eth.defaultAccount;
+        console.log(e);
+        $("#account").val(e);
+        window.web3.eth.getBalance(e, function (error, result) {
+            if (!error) {
+                web3.wei
+                $("#balance").val(web3.fromWei(result));
+            };
+        });
+        hgt.balanceOf(e, function(error,result) {
+            if (!error) {
+                $("#hgt").val(result.toString()/1e8);
+            }
+        }
+        );
+* Test Frameworks
+.background images/Artboard_4.png
+
+- Truffle / Ganache
+- Embark / Ganche OR geth (local net)
+
+* using embark
+.background images/Artboard_4.png
+
+taken from https://embark.status.im/docs/quick_start.html
+
+create a project
+
+   $ embark demo
+   $ cd embark_demo
+
+   $ embark run 
+
+.image images/embark.png 400 _ 
+
+* what's created
+.background images/Artboard_4.png
+
+- demo smart contract
+
+    contract SimpleStorage {
+        uint public storedData;
+
+        constructor(uint initialValue) public {
+            storedData = initialValue;
+        }
+
+        function set(uint x) public {
+            storedData = x;
+        }
+
+        function get() public view returns (uint retVal) {
+            return storedData;
+        }
+
+    }
+
+- code to access contract http://127.0.0.1:8000
+
+* Panel
+.background images/Artboard_4.png
+
+.image images/embark-web.png 400 _ 
+
+* New Embark project
+
+   embark new <myproject name>
+
